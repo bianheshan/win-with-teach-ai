@@ -1,8 +1,20 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TeamStep } from "./steps/TeamStep";
+import { TopicStep } from "./steps/TopicStep";
+import { ResourcesStep } from "./steps/ResourcesStep";
+import { PlatformStep } from "./steps/PlatformStep";
 import { LessonPlanStep } from "./steps/LessonPlanStep";
 import { VideoScriptStep } from "./steps/VideoScriptStep";
+import { VideoShootStep } from "./steps/VideoShootStep";
 import { ReportStep } from "./steps/ReportStep";
+import { StandardsStep } from "./steps/StandardsStep";
+import { MaterialsStep } from "./steps/MaterialsStep";
+import { PresentationPPTStep } from "./steps/PresentationPPTStep";
+import { PresentationScriptStep } from "./steps/PresentationScriptStep";
+import { TeachingPPTStep } from "./steps/TeachingPPTStep";
+import { TeachingScriptStep } from "./steps/TeachingScriptStep";
+import { QAPrepStep } from "./steps/QAPrepStep";
+import { EvidenceStep } from "./steps/EvidenceStep";
 
 interface InteractionPanelProps {
   currentStage: string;
@@ -14,44 +26,70 @@ export function InteractionPanel({ currentStage, currentStep, projectId }: Inter
   const renderContent = () => {
     // 参赛准备阶段
     if (currentStage === "preparation") {
-      if (currentStep === "team") {
-        return <TeamStep projectId={projectId} />;
+      switch (currentStep) {
+        case "team":
+          return <TeamStep projectId={projectId} />;
+        case "topic":
+          return <TopicStep projectId={projectId} />;
+        case "resources":
+          return <ResourcesStep projectId={projectId} />;
+        case "platform":
+          return <PlatformStep projectId={projectId} />;
+        default:
+          return (
+            <div className="text-center py-12 text-muted-foreground">
+              请从左侧选择步骤
+            </div>
+          );
       }
-      // TODO: 其他准备阶段步骤
-      return (
-        <div className="text-center py-12 text-muted-foreground">
-          该功能正在开发中...
-        </div>
-      );
     }
 
     // 初赛阶段
     if (currentStage === "preliminary") {
-      if (currentStep === "lesson-plan") {
-        return <LessonPlanStep projectId={projectId} />;
+      switch (currentStep) {
+        case "lesson-plan":
+          return <LessonPlanStep projectId={projectId} />;
+        case "video-script":
+          return <VideoScriptStep projectId={projectId} />;
+        case "video-shoot":
+          return <VideoShootStep projectId={projectId} />;
+        case "report":
+          return <ReportStep projectId={projectId} />;
+        case "standards":
+          return <StandardsStep projectId={projectId} />;
+        case "materials":
+          return <MaterialsStep projectId={projectId} />;
+        default:
+          return (
+            <div className="text-center py-12 text-muted-foreground">
+              请从左侧选择步骤
+            </div>
+          );
       }
-      if (currentStep === "video-script") {
-        return <VideoScriptStep projectId={projectId} />;
-      }
-      if (currentStep === "report") {
-        return <ReportStep projectId={projectId} />;
-      }
-      // TODO: 其他初赛步骤
-      return (
-        <div className="text-center py-12 text-muted-foreground">
-          该功能正在开发中...
-        </div>
-      );
     }
 
     // 决赛阶段
     if (currentStage === "final") {
-      // TODO: 决赛阶段步骤
-      return (
-        <div className="text-center py-12 text-muted-foreground">
-          该功能正在开发中...
-        </div>
-      );
+      switch (currentStep) {
+        case "presentation-ppt":
+          return <PresentationPPTStep projectId={projectId} />;
+        case "presentation-script":
+          return <PresentationScriptStep projectId={projectId} />;
+        case "teaching-ppt":
+          return <TeachingPPTStep projectId={projectId} />;
+        case "teaching-script":
+          return <TeachingScriptStep projectId={projectId} />;
+        case "qa-prep":
+          return <QAPrepStep projectId={projectId} />;
+        case "evidence":
+          return <EvidenceStep projectId={projectId} />;
+        default:
+          return (
+            <div className="text-center py-12 text-muted-foreground">
+              请从左侧选择步骤
+            </div>
+          );
+      }
     }
 
     return (
