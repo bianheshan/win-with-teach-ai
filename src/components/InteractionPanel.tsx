@@ -9,9 +9,10 @@ import { Upload, FileText, CheckCircle2, AlertCircle, Award } from "lucide-react
 interface InteractionPanelProps {
   currentStage: string;
   currentStep: string;
+  projectId?: string;
 }
 
-export function InteractionPanel({ currentStage, currentStep }: InteractionPanelProps) {
+export function InteractionPanel({ currentStage, currentStep, projectId }: InteractionPanelProps) {
   const renderPreparationContent = () => (
     <div className="space-y-4">
       <Card>

@@ -1,7 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useRealtimeChat } from "@/hooks/useRealtimeChat";
+import { supabase } from "@/integrations/supabase/client";
 import { StageNavigation, Stage } from "@/components/StageNavigation";
-import { ChatInterface, Message } from "@/components/ChatInterface";
+import { ChatInterface } from "@/components/ChatInterface";
 import { InteractionPanel } from "@/components/InteractionPanel";
+import { ProjectSelector } from "@/components/ProjectSelector";
+import { Button } from "@/components/ui/button";
+import { LogOut, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+interface Project {
+  id: string;
+  title: string;
+  course_name: string;
+  competition_group: string;
+  current_stage: string;
+  total_hours: number;
+  created_at: string;
+}
 
 const stages: Stage[] = [
   {
@@ -44,111 +61,179 @@ const stages: Stage[] = [
 ];
 
 const Index = () => {
+  const { user, loading: authLoading, signOut } = useAuth();
+  const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [currentStage, setCurrentStage] = useState("preparation");
   const [currentStep, setCurrentStep] = useState("team");
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "您好！我是教学能力大赛专业辅导助手。\n\n我将为您提供：\n✓ 参赛全流程专业指导\n✓ 材料智能生成与评估\n✓ 基于评分标准的精准打分\n✓ 针对性改进建议\n\n让我们一起冲刺一等奖！请告诉我您目前处于哪个阶段，或者有什么具体需求？",
-      timestamp: new Date(),
-    },
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState<Record<string, any>>({});
 
-  const handleStepClick = (stageId: string, stepId: string) => {
-    setCurrentStage(stageId);
-    setCurrentStep(stepId);
+  const { messages, isLoading: chatLoading, sendMessage } = useRealtimeChat({
+    projectId: currentProject?.id,
+    stage: currentStage,
+    step: currentStep,
+  });
 
-    // 自动发送相关提示
-    const stage = stages.find(s => s.id === stageId);
-    const step = stage?.steps.find(s => s.id === stepId);
-    
-    if (stage && step) {
-      const contextMessage: Message = {
-        id: Date.now().toString(),
-        role: "assistant",
-        content: `您已切换到【${stage.title}】-【${step.title}】\n\n我可以帮您：\n${getStepGuidance(stageId, stepId)}`,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, contextMessage]);
+  // 加载进度数据
+  useEffect(() => {
+    if (currentProject) {
+      loadProgress();
+    }
+  }, [currentProject]);
+
+  const loadProgress = async () => {
+    if (!currentProject) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("progress_tracking")
+        .select("*")
+        .eq("project_id", currentProject.id);
+
+      if (error) throw error;
+
+      const progressMap: Record<string, any> = {};
+      data?.forEach((item) => {
+        const key = `${item.stage}-${item.step}`;
+        progressMap[key] = item;
+      });
+
+      setProgress(progressMap);
+
+      // 设置当前阶段为项目的当前阶段
+      if (currentProject.current_stage) {
+        setCurrentStage(currentProject.current_stage);
+      }
+    } catch (error) {
+      console.error("Load progress error:", error);
     }
   };
 
-  const getStepGuidance = (stageId: string, stepId: string): string => {
-    const guidance: Record<string, Record<string, string>> = {
-      preparation: {
-        team: "• 分析团队构成是否合理\n• 提供团队优化建议\n• 评估团队能力匹配度",
-        topic: "• 评估课程选题适合度\n• 分析内容完整性和连续性\n• 识别潜在亮点与赛点",
-        resources: "• 盘点现有教学资源\n• 识别资源缺口\n• 提供资源准备建议",
-      },
-      preliminary: {
-        "lesson-plan": "• 辅助生成16学时教案\n• 评估教案完整性和规范性\n• 提供优化建议和打分",
-        "video-script": "• 生成4段视频拍摄脚本\n• 确保一镜到底的可行性\n• 标注关键教学环节",
-        report: "• 辅助撰写教学实施报告\n• 确保字数和图表要求\n• 评估报告质量打分",
-      },
-      final: {
-        "presentation-ppt": "• 生成8分钟说课PPT\n• 突出参赛内容亮点\n• 符合决赛展示要求",
-        "qa-prep": "• 预测可能的答辩问题\n• 准备标准答案\n• 整理佐证材料",
-      },
-    };
+  const handleStepClick = async (stageId: string, stepId: string) => {
+    setCurrentStage(stageId);
+    setCurrentStep(stepId);
 
-    return guidance[stageId]?.[stepId] || "请告诉我您的具体需求";
+    // 更新进度为"进行中"
+    if (currentProject) {
+      try {
+        await supabase.from("progress_tracking").upsert({
+          project_id: currentProject.id,
+          stage: stageId,
+          step: stepId,
+          status: "in_progress",
+        });
+      } catch (error) {
+        console.error("Update progress error:", error);
+      }
+    }
   };
 
-  const handleSendMessage = (content: string) => {
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content,
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setIsLoading(true);
-
-    // 模拟AI响应
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: getAIResponse(content, currentStage, currentStep),
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, assistantMessage]);
-      setIsLoading(false);
-    }, 1500);
+  const handleProjectSelect = (project: Project) => {
+    setCurrentProject(project);
+    setCurrentStage(project.current_stage || "preparation");
+    toast.success(`已切换到项目：${project.title}`);
   };
 
-  const getAIResponse = (userInput: string, stage: string, step: string): string => {
-    // 这里将来会接入真实的AI
-    return `我理解您在【${stages.find(s => s.id === stage)?.title}】阶段关于"${userInput}"的问题。\n\n基于教学能力大赛的评分标准和专家经验，我的建议是：\n\n1. 首先确保内容符合比赛基本要求\n2. 突出创新点和亮点\n3. 注重课程思政的自然融入\n4. 保持材料的一致性和完整性\n\n您可以在右侧工作区上传相关材料，我会为您提供详细的评估和打分。`;
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("已退出登录");
   };
+
+  if (authLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+          <p className="text-muted-foreground">加载中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // useAuth hook will redirect to /auth
+  }
 
   return (
-    <div className="h-screen w-full flex bg-background">
-      {/* 左侧：阶段导航 */}
-      <div className="w-80 border-r bg-sidebar flex-shrink-0">
-        <StageNavigation
-          stages={stages}
-          currentStage={currentStage}
-          currentStep={currentStep}
-          onStepClick={handleStepClick}
-        />
+    <div className="h-screen w-full flex flex-col bg-background">
+      {/* 顶部工具栏 */}
+      <div className="h-16 border-b bg-card flex items-center justify-between px-6 flex-shrink-0">
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-bold text-primary">
+            教学能力大赛智能辅导平台
+          </h1>
+          <ProjectSelector
+            currentProject={currentProject}
+            onSelectProject={handleProjectSelect}
+          />
+        </div>
+
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-muted-foreground">
+            {user.email}
+          </span>
+          <Button variant="ghost" size="sm" onClick={handleSignOut}>
+            <LogOut className="h-4 w-4 mr-2" />
+            退出
+          </Button>
+        </div>
       </div>
 
-      {/* 中间：对话区 */}
-      <div className="flex-1 min-w-0">
-        <ChatInterface
-          messages={messages}
-          onSendMessage={handleSendMessage}
-          isLoading={isLoading}
-        />
-      </div>
+      {/* 主内容区域 */}
+      <div className="flex-1 flex min-h-0">
+        {/* 左侧：阶段导航 */}
+        <div className="w-80 border-r bg-sidebar flex-shrink-0">
+          <StageNavigation
+            stages={stages.map((stage) => ({
+              ...stage,
+              steps: stage.steps.map((step) => ({
+                ...step,
+                completed:
+                  progress[`${stage.id}-${step.id}`]?.status === "completed",
+              })),
+            }))}
+            currentStage={currentStage}
+            currentStep={currentStep}
+            onStepClick={handleStepClick}
+          />
+        </div>
 
-      {/* 右侧：交互区 */}
-      <div className="w-96 border-l bg-card flex-shrink-0">
-        <InteractionPanel currentStage={currentStage} currentStep={currentStep} />
+        {/* 中间：对话区 */}
+        <div className="flex-1 min-w-0">
+          {currentProject ? (
+            <ChatInterface
+              messages={messages}
+              onSendMessage={sendMessage}
+              isLoading={chatLoading}
+            />
+          ) : (
+            <div className="h-full flex items-center justify-center p-8">
+              <div className="text-center max-w-md space-y-4">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4">
+                  <span className="text-4xl">🎓</span>
+                </div>
+                <h2 className="text-2xl font-bold">欢迎使用智能辅导平台</h2>
+                <p className="text-muted-foreground">
+                  请先创建或选择一个项目，开始您的参赛之旅
+                </p>
+                <ProjectSelector
+                  currentProject={currentProject}
+                  onSelectProject={handleProjectSelect}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 右侧：交互区 */}
+        {currentProject && (
+          <div className="w-96 border-l bg-card flex-shrink-0">
+            <InteractionPanel
+              currentStage={currentStage}
+              currentStep={currentStep}
+              projectId={currentProject.id}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
