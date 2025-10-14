@@ -49,13 +49,13 @@ export function ResourcesStep({ projectId }: ResourcesStepProps) {
   const loadResources = async () => {
     try {
       const { data, error } = await supabase
-        .from("teaching_resources")
+        .from("teaching_resources" as any)
         .select("*")
         .eq("project_id", projectId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setResources(data || []);
+      setResources((data as any) || []);
     } catch (error) {
       console.error("Load resources error:", error);
       toast.error("加载资源失败");
@@ -70,14 +70,14 @@ export function ResourcesStep({ projectId }: ResourcesStepProps) {
 
     setLoading(true);
     try {
-      const { error } = await supabase.from("teaching_resources").insert({
+      const { error } = await supabase.from("teaching_resources" as any).insert({
         project_id: projectId,
         resource_type: formData.type,
         resource_name: formData.name,
         resource_url: formData.url || null,
         description: formData.description || null,
         status: "available",
-      });
+      } as any);
 
       if (error) throw error;
 
@@ -95,7 +95,7 @@ export function ResourcesStep({ projectId }: ResourcesStepProps) {
   const handleDelete = async (id: string) => {
     try {
       const { error } = await supabase
-        .from("teaching_resources")
+        .from("teaching_resources" as any)
         .delete()
         .eq("id", id);
 

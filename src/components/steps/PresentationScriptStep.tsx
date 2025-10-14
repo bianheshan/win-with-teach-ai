@@ -28,13 +28,13 @@ export function PresentationScriptStep({ projectId }: PresentationScriptStepProp
   const loadScript = async () => {
     try {
       const { data, error } = await supabase
-        .from("presentation_script")
+        .from("presentation_script" as any)
         .select("*")
         .eq("project_id", projectId)
         .maybeSingle();
 
       if (error) throw error;
-      setScript(data);
+      setScript(data as any);
     } catch (error) {
       console.error("Load script error:", error);
     }
@@ -49,7 +49,7 @@ export function PresentationScriptStep({ projectId }: PresentationScriptStepProp
         .eq("project_id", projectId);
 
       const { data: pptData } = await supabase
-        .from("presentation_ppt")
+        .from("presentation_ppt" as any)
         .select("*")
         .eq("project_id", projectId)
         .maybeSingle();
@@ -60,19 +60,19 @@ export function PresentationScriptStep({ projectId }: PresentationScriptStepProp
           projectId,
           context: {
             lessonPlans: lessonPlans || [],
-            pptOutline: pptData?.outline,
+            pptOutline: (pptData as any)?.outline,
           },
         },
       });
 
       if (error) throw error;
 
-      const { error: insertError } = await supabase.from("presentation_script").upsert({
+      const { error: insertError } = await supabase.from("presentation_script" as any).upsert({
         project_id: projectId,
         script_content: data.content,
         estimated_duration: data.duration || 10,
         status: "draft",
-      });
+      } as any);
 
       if (insertError) throw insertError;
 

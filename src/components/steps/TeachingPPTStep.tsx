@@ -28,13 +28,13 @@ export function TeachingPPTStep({ projectId }: TeachingPPTStepProps) {
   const loadPPT = async () => {
     try {
       const { data, error } = await supabase
-        .from("teaching_ppt")
+        .from("teaching_ppt" as any)
         .select("*")
         .eq("project_id", projectId)
         .maybeSingle();
 
       if (error) throw error;
-      setPPT(data);
+      setPPT(data as any);
     } catch (error) {
       console.error("Load PPT error:", error);
     }
@@ -62,12 +62,12 @@ export function TeachingPPTStep({ projectId }: TeachingPPTStepProps) {
 
       if (error) throw error;
 
-      const { error: insertError } = await supabase.from("teaching_ppt").upsert({
+      const { error: insertError } = await supabase.from("teaching_ppt" as any).upsert({
         project_id: projectId,
         outline: data.outline,
         slide_count: data.slide_count || 30,
         status: "draft",
-      });
+      } as any);
 
       if (insertError) throw insertError;
 

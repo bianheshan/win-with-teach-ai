@@ -28,13 +28,13 @@ export function PresentationPPTStep({ projectId }: PresentationPPTStepProps) {
   const loadOutline = async () => {
     try {
       const { data, error } = await supabase
-        .from("presentation_ppt")
+        .from("presentation_ppt" as any)
         .select("*")
         .eq("project_id", projectId)
         .maybeSingle();
 
       if (error) throw error;
-      setOutline(data);
+      setOutline(data as any);
     } catch (error) {
       console.error("Load outline error:", error);
     }
@@ -61,12 +61,12 @@ export function PresentationPPTStep({ projectId }: PresentationPPTStepProps) {
 
       if (error) throw error;
 
-      const { error: insertError } = await supabase.from("presentation_ppt").upsert({
+      const { error: insertError } = await supabase.from("presentation_ppt" as any).upsert({
         project_id: projectId,
         outline: data.outline,
         slide_count: data.slide_count || 20,
         status: "draft",
-      });
+      } as any);
 
       if (insertError) throw insertError;
 

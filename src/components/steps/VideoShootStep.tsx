@@ -64,12 +64,12 @@ export function VideoShootStep({ projectId }: VideoShootStepProps) {
   const loadChecklist = async () => {
     try {
       const { data, error } = await supabase
-        .from("shooting_checklist")
+        .from("shooting_checklist" as any)
         .select("*")
         .eq("project_id", projectId);
 
       if (error) throw error;
-      setChecklist(data || []);
+      setChecklist((data as any) || []);
     } catch (error) {
       console.error("Load checklist error:", error);
     }
@@ -84,19 +84,19 @@ export function VideoShootStep({ projectId }: VideoShootStepProps) {
       if (existingItem) {
         // 更新状态
         const { error } = await supabase
-          .from("shooting_checklist")
+          .from("shooting_checklist" as any)
           .update({ checked: !existingItem.checked })
           .eq("id", existingItem.id);
 
         if (error) throw error;
       } else {
         // 新增记录
-        const { error } = await supabase.from("shooting_checklist").insert({
+        const { error } = await supabase.from("shooting_checklist" as any).insert({
           project_id: projectId,
           category,
           item,
           checked: true,
-        });
+        } as any);
 
         if (error) throw error;
       }

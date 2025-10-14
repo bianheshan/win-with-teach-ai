@@ -40,13 +40,13 @@ export function MaterialsStep({ projectId }: MaterialsStepProps) {
   const loadMaterials = async () => {
     try {
       const { data, error } = await supabase
-        .from("evidence_materials")
+        .from("evidence_materials" as any)
         .select("*")
         .eq("project_id", projectId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setMaterials(data || []);
+      setMaterials((data as any) || []);
     } catch (error) {
       console.error("Load materials error:", error);
       toast.error("加载材料失败");
@@ -78,13 +78,13 @@ export function MaterialsStep({ projectId }: MaterialsStepProps) {
         .from("competition-files")
         .getPublicUrl(fileName);
 
-      const { error: insertError } = await supabase.from("evidence_materials").insert({
+      const { error: insertError } = await supabase.from("evidence_materials" as any).insert({
         project_id: projectId,
         material_type: type,
         file_name: file.name,
         file_path: fileName,
         file_size: file.size,
-      });
+      } as any);
 
       if (insertError) throw insertError;
 
@@ -107,7 +107,7 @@ export function MaterialsStep({ projectId }: MaterialsStepProps) {
       if (deleteFileError) throw deleteFileError;
 
       const { error: deleteRecordError } = await supabase
-        .from("evidence_materials")
+        .from("evidence_materials" as any)
         .delete()
         .eq("id", material.id);
 

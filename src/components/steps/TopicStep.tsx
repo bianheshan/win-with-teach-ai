@@ -39,17 +39,17 @@ export function TopicStep({ projectId }: TopicStepProps) {
   const loadTopicAnalysis = async () => {
     try {
       const { data, error } = await supabase
-        .from("topic_analysis")
+        .from("topic_analysis" as any)
         .select("*")
         .eq("project_id", projectId)
         .maybeSingle();
 
       if (error) throw error;
       if (data) {
-        setAnalysis(data);
+        setAnalysis(data as any);
         setFormData({
-          title: data.topic_title,
-          description: data.topic_description,
+          title: (data as any).topic_title,
+          description: (data as any).topic_description,
         });
       }
     } catch (error) {
@@ -78,7 +78,7 @@ export function TopicStep({ projectId }: TopicStepProps) {
 
       if (error) throw error;
 
-      const { error: insertError } = await supabase.from("topic_analysis").upsert({
+      const { error: insertError } = await supabase.from("topic_analysis" as any).upsert({
         project_id: projectId,
         topic_title: formData.title,
         topic_description: formData.description,
@@ -87,7 +87,7 @@ export function TopicStep({ projectId }: TopicStepProps) {
         competitiveness_score: data.competitiveness_score || 70,
         ai_feedback: data.feedback,
         status: "analyzed",
-      });
+      } as any);
 
       if (insertError) throw insertError;
 

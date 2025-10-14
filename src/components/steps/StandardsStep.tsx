@@ -36,7 +36,7 @@ export function StandardsStep({ projectId }: StandardsStepProps) {
   const loadReview = async () => {
     try {
       const { data, error } = await supabase
-        .from("standards_review")
+        .from("standards_review" as any)
         .select("*")
         .eq("project_id", projectId)
         .maybeSingle();
@@ -44,10 +44,10 @@ export function StandardsStep({ projectId }: StandardsStepProps) {
       if (error) throw error;
       
       if (data) {
-        setReview(data);
+        setReview(data as any);
         setFormData({
-          standards: data.curriculum_standards,
-          program: data.training_program,
+          standards: (data as any).curriculum_standards,
+          program: (data as any).training_program,
         });
       }
     } catch (error) {
@@ -76,14 +76,14 @@ export function StandardsStep({ projectId }: StandardsStepProps) {
 
       if (error) throw error;
 
-      const { error: upsertError } = await supabase.from("standards_review").upsert({
+      const { error: upsertError } = await supabase.from("standards_review" as any).upsert({
         project_id: projectId,
         curriculum_standards: formData.standards,
         training_program: formData.program,
         alignment_score: data.alignment_score || 85,
         ai_feedback: data.feedback,
         status: "reviewed",
-      });
+      } as any);
 
       if (upsertError) throw upsertError;
 

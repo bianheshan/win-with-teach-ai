@@ -73,13 +73,13 @@ export function PlatformStep({ projectId }: PlatformStepProps) {
   const loadSelectedTools = async () => {
     try {
       const { data, error } = await supabase
-        .from("platform_tools")
+        .from("platform_tools" as any)
         .select("*")
         .eq("project_id", projectId);
 
       if (error) throw error;
       
-      const toolNames = data?.map((t) => `${t.category}-${t.name}`) || [];
+      const toolNames = (data as any)?.map((t: any) => `${t.category}-${t.name}`) || [];
       setSelectedTools(toolNames);
     } catch (error) {
       console.error("Load tools error:", error);
@@ -94,7 +94,7 @@ export function PlatformStep({ projectId }: PlatformStepProps) {
       if (isSelected) {
         // 取消选择
         const { error } = await supabase
-          .from("platform_tools")
+          .from("platform_tools" as any)
           .delete()
           .eq("project_id", projectId)
           .eq("category", category)
@@ -106,13 +106,13 @@ export function PlatformStep({ projectId }: PlatformStepProps) {
         toast.success("已移除工具");
       } else {
         // 添加选择
-        const { error } = await supabase.from("platform_tools").insert({
+        const { error } = await supabase.from("platform_tools" as any).insert({
           project_id: projectId,
           category,
           name: tool.name,
           description: tool.description,
           priority: tool.priority,
-        });
+        } as any);
 
         if (error) throw error;
         

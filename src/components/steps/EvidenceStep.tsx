@@ -38,13 +38,13 @@ export function EvidenceStep({ projectId }: EvidenceStepProps) {
   const loadEvidence = async () => {
     try {
       const { data, error } = await supabase
-        .from("final_evidence")
+        .from("final_evidence" as any)
         .select("*")
         .eq("project_id", projectId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setEvidence(data || []);
+      setEvidence((data as any) || []);
     } catch (error) {
       console.error("Load evidence error:", error);
       toast.error("加载材料失败");
@@ -71,13 +71,13 @@ export function EvidenceStep({ projectId }: EvidenceStepProps) {
 
       if (uploadError) throw uploadError;
 
-      const { error: insertError } = await supabase.from("final_evidence").insert({
+      const { error: insertError } = await supabase.from("final_evidence" as any).insert({
         project_id: projectId,
         material_type: type,
         file_name: file.name,
         file_path: fileName,
         file_size: file.size,
-      });
+      } as any);
 
       if (insertError) throw insertError;
 
@@ -100,7 +100,7 @@ export function EvidenceStep({ projectId }: EvidenceStepProps) {
       if (deleteFileError) throw deleteFileError;
 
       const { error: deleteRecordError } = await supabase
-        .from("final_evidence")
+        .from("final_evidence" as any)
         .delete()
         .eq("id", item.id);
 

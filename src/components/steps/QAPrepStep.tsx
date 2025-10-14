@@ -28,13 +28,13 @@ export function QAPrepStep({ projectId }: QAPrepStepProps) {
   const loadQAPrep = async () => {
     try {
       const { data, error } = await supabase
-        .from("qa_preparation")
+        .from("qa_preparation" as any)
         .select("*")
         .eq("project_id", projectId)
         .maybeSingle();
 
       if (error) throw error;
-      setQAPrep(data);
+      setQAPrep(data as any);
     } catch (error) {
       console.error("Load QA prep error:", error);
     }
@@ -67,12 +67,12 @@ export function QAPrepStep({ projectId }: QAPrepStepProps) {
 
       if (error) throw error;
 
-      const { error: insertError } = await supabase.from("qa_preparation").upsert({
+      const { error: insertError } = await supabase.from("qa_preparation" as any).upsert({
         project_id: projectId,
         qa_list: data.qa_list,
         total_questions: data.qa_list?.length || 0,
         status: "prepared",
-      });
+      } as any);
 
       if (insertError) throw insertError;
 
