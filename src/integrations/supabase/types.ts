@@ -14,7 +14,449 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_assessments: {
+        Row: {
+          assessment_type: string
+          created_at: string
+          criteria: Json
+          feedback: Json
+          id: string
+          project_id: string
+          score: number
+          suggestions: string[] | null
+          target_id: string | null
+        }
+        Insert: {
+          assessment_type: string
+          created_at?: string
+          criteria: Json
+          feedback: Json
+          id?: string
+          project_id: string
+          score: number
+          suggestions?: string[] | null
+          target_id?: string | null
+        }
+        Update: {
+          assessment_type?: string
+          created_at?: string
+          criteria?: Json
+          feedback?: Json
+          id?: string
+          project_id?: string
+          score?: number
+          suggestions?: string[] | null
+          target_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assessments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "competition_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_projects: {
+        Row: {
+          competition_group: string
+          course_name: string
+          created_at: string
+          current_stage: string
+          id: string
+          status: string
+          title: string
+          total_hours: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          competition_group: string
+          course_name: string
+          created_at?: string
+          current_stage?: string
+          id?: string
+          status?: string
+          title: string
+          total_hours: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          competition_group?: string
+          course_name?: string
+          created_at?: string
+          current_stage?: string
+          id?: string
+          status?: string
+          title?: string
+          total_hours?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      final_materials: {
+        Row: {
+          ai_score: number | null
+          ai_suggestions: Json | null
+          content: Json
+          created_at: string
+          id: string
+          material_type: string
+          project_id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_score?: number | null
+          ai_suggestions?: Json | null
+          content: Json
+          created_at?: string
+          id?: string
+          material_type: string
+          project_id: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_score?: number | null
+          ai_suggestions?: Json | null
+          content?: Json
+          created_at?: string
+          id?: string
+          material_type?: string
+          project_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "final_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "competition_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      implementation_reports: {
+        Row: {
+          ai_feedback: Json | null
+          ai_score: number | null
+          chart_count: number
+          content: Json
+          created_at: string
+          id: string
+          project_id: string
+          status: string
+          updated_at: string
+          version: number
+          word_count: number
+        }
+        Insert: {
+          ai_feedback?: Json | null
+          ai_score?: number | null
+          chart_count?: number
+          content: Json
+          created_at?: string
+          id?: string
+          project_id: string
+          status?: string
+          updated_at?: string
+          version?: number
+          word_count?: number
+        }
+        Update: {
+          ai_feedback?: Json | null
+          ai_score?: number | null
+          chart_count?: number
+          content?: Json
+          created_at?: string
+          id?: string
+          project_id?: string
+          status?: string
+          updated_at?: string
+          version?: number
+          word_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "implementation_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "competition_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_plans: {
+        Row: {
+          ai_feedback: Json | null
+          ai_score: number | null
+          content: Json
+          created_at: string
+          difficult_points: string[] | null
+          duration_minutes: number
+          id: string
+          key_points: string[] | null
+          lesson_number: number
+          objectives: string
+          project_id: string
+          status: string
+          teaching_methods: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_feedback?: Json | null
+          ai_score?: number | null
+          content: Json
+          created_at?: string
+          difficult_points?: string[] | null
+          duration_minutes?: number
+          id?: string
+          key_points?: string[] | null
+          lesson_number: number
+          objectives: string
+          project_id: string
+          status?: string
+          teaching_methods?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_feedback?: Json | null
+          ai_score?: number | null
+          content?: Json
+          created_at?: string
+          difficult_points?: string[] | null
+          duration_minutes?: number
+          id?: string
+          key_points?: string[] | null
+          lesson_number?: number
+          objectives?: string
+          project_id?: string
+          status?: string
+          teaching_methods?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "competition_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      progress_tracking: {
+        Row: {
+          completed_at: string | null
+          completion_percentage: number
+          created_at: string
+          id: string
+          notes: string | null
+          project_id: string
+          stage: string
+          status: string
+          step: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completion_percentage?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          project_id: string
+          stage: string
+          status?: string
+          step: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          completion_percentage?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          project_id?: string
+          stage?: string
+          status?: string
+          step?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "progress_tracking_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "competition_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          created_at: string
+          experience_years: number | null
+          id: string
+          name: string
+          project_id: string
+          role: string
+          specialties: string[] | null
+          title: string | null
+        }
+        Insert: {
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          name: string
+          project_id: string
+          role: string
+          specialties?: string[] | null
+          title?: string | null
+        }
+        Update: {
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          name?: string
+          project_id?: string
+          role?: string
+          specialties?: string[] | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "competition_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      uploaded_files: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          id: string
+          mime_type: string
+          project_id: string
+          related_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          id?: string
+          mime_type: string
+          project_id: string
+          related_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          mime_type?: string
+          project_id?: string
+          related_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uploaded_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "competition_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_scripts: {
+        Row: {
+          ai_suggestions: Json | null
+          created_at: string
+          duration_minutes: number
+          id: string
+          ideological_points: string[] | null
+          interaction_points: string[] | null
+          key_moments: string[] | null
+          lesson_plan_id: string | null
+          project_id: string
+          script_content: Json
+          status: string
+          tech_integration_points: string[] | null
+          title: string
+          updated_at: string
+          video_number: number
+        }
+        Insert: {
+          ai_suggestions?: Json | null
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          ideological_points?: string[] | null
+          interaction_points?: string[] | null
+          key_moments?: string[] | null
+          lesson_plan_id?: string | null
+          project_id: string
+          script_content: Json
+          status?: string
+          tech_integration_points?: string[] | null
+          title: string
+          updated_at?: string
+          video_number: number
+        }
+        Update: {
+          ai_suggestions?: Json | null
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          ideological_points?: string[] | null
+          interaction_points?: string[] | null
+          key_moments?: string[] | null
+          lesson_plan_id?: string | null
+          project_id?: string
+          script_content?: Json
+          status?: string
+          tech_integration_points?: string[] | null
+          title?: string
+          updated_at?: string
+          video_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_scripts_lesson_plan_id_fkey"
+            columns: ["lesson_plan_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_scripts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "competition_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
