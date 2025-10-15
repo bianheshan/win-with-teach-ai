@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Folder, ChevronRight } from "lucide-react";
+import { Plus, Folder, ChevronRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface Project {
@@ -122,17 +122,19 @@ export function ProjectSelector({ currentProject, onSelectProject }: ProjectSele
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className="gap-2 hover:shadow-md transition-smooth">
           {currentProject ? (
             <>
-              <Folder className="h-4 w-4" />
-              {currentProject.title}
-              <ChevronRight className="h-4 w-4" />
+              <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Folder className="h-4 w-4 text-primary" />
+              </div>
+              <span className="font-semibold">{currentProject.title}</span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </>
           ) : (
             <>
-              <Plus className="h-4 w-4" />
-              创建/选择项目
+              <Plus className="h-5 w-5" />
+              <span className="font-semibold">创建/选择项目</span>
             </>
           )}
         </Button>
@@ -147,10 +149,17 @@ export function ProjectSelector({ currentProject, onSelectProject }: ProjectSele
         <ScrollArea className="h-[400px] pr-4">
           <div className="space-y-6">
             {/* 创建新项目 */}
-            <Card>
+            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/0">
               <CardHeader>
-                <CardTitle className="text-lg">创建新项目</CardTitle>
-                <CardDescription>开始新的参赛准备</CardDescription>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Plus className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">创建新项目</CardTitle>
+                    <CardDescription>开始新的参赛准备</CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -210,26 +219,39 @@ export function ProjectSelector({ currentProject, onSelectProject }: ProjectSele
 
                 <Button
                   onClick={createProject}
-                  className="w-full"
+                  className="w-full mt-2"
                   disabled={creating}
                 >
-                  {creating ? "创建中..." : "创建项目"}
+                  {creating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      创建中...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4 mr-2" />
+                      创建项目
+                    </>
+                  )}
                 </Button>
               </CardContent>
             </Card>
 
             {/* 现有项目列表 */}
             {projects.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="font-semibold">我的项目</h3>
+              <div className="space-y-3">
+                <h3 className="font-bold text-base flex items-center gap-2">
+                  <Folder className="h-5 w-5 text-primary" />
+                  我的项目
+                </h3>
                 <div className="space-y-2">
                   {projects.map((project) => (
                     <Card
                       key={project.id}
-                      className={`cursor-pointer transition-all hover:shadow-md ${
+                      className={`cursor-pointer transition-smooth hover:scale-[1.02] ${
                         currentProject?.id === project.id
-                          ? "border-primary bg-primary/5"
-                          : ""
+                          ? "border-primary/50 bg-gradient-to-r from-primary/10 to-primary/5 shadow-md"
+                          : "hover:border-primary/30"
                       }`}
                       onClick={() => {
                         onSelectProject(project);

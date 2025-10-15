@@ -156,22 +156,34 @@ const Index = () => {
   return (
     <div className="h-screen w-full flex flex-col bg-background">
       {/* 顶部工具栏 */}
-      <div className="h-16 border-b bg-card flex items-center justify-between px-6 flex-shrink-0">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold text-primary">
-            教学能力大赛智能辅导平台
-          </h1>
-          <ProjectSelector
-            currentProject={currentProject}
-            onSelectProject={handleProjectSelect}
-          />
+      <div className="h-16 border-b bg-gradient-to-r from-card to-card/80 backdrop-blur-sm flex items-center justify-between px-6 flex-shrink-0 shadow-sm">
+        <div className="flex items-center gap-4 animate-fade-in">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <span className="text-xl">🎓</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+                教学能力大赛智能辅导平台
+              </h1>
+              <p className="text-xs text-muted-foreground">AI驱动·一站式辅导</p>
+            </div>
+          </div>
+          <div className="ml-4">
+            <ProjectSelector
+              currentProject={currentProject}
+              onSelectProject={handleProjectSelect}
+            />
+          </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-muted-foreground">
-            {user.email}
-          </span>
-          <Button variant="ghost" size="sm" onClick={handleSignOut}>
+        <div className="flex items-center gap-3">
+          <div className="px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10">
+            <span className="text-sm text-foreground font-medium">
+              {user.email}
+            </span>
+          </div>
+          <Button variant="ghost" size="sm" onClick={handleSignOut} className="hover:bg-destructive/10 hover:text-destructive transition-smooth">
             <LogOut className="h-4 w-4 mr-2" />
             退出
           </Button>
@@ -181,7 +193,7 @@ const Index = () => {
       {/* 主内容区域 */}
       <div className="flex-1 flex min-h-0">
         {/* 左侧：阶段导航 */}
-        <div className="w-80 border-r bg-sidebar flex-shrink-0">
+        <div className="w-80 border-r bg-gradient-to-b from-sidebar to-sidebar/50 flex-shrink-0 shadow-md">
           <StageNavigation
             stages={stages.map((stage) => ({
               ...stage,
@@ -206,19 +218,39 @@ const Index = () => {
               isLoading={chatLoading}
             />
           ) : (
-            <div className="h-full flex items-center justify-center p-8">
-              <div className="text-center max-w-md space-y-4">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4">
-                  <span className="text-4xl">🎓</span>
+            <div className="h-full flex items-center justify-center p-8 bg-gradient-to-br from-background to-muted/20">
+              <div className="text-center max-w-md space-y-6 animate-fade-in-up">
+                <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 mb-6 shadow-lg animate-pulse-glow">
+                  <span className="text-5xl">🎓</span>
                 </div>
-                <h2 className="text-2xl font-bold">欢迎使用智能辅导平台</h2>
-                <p className="text-muted-foreground">
-                  请先创建或选择一个项目，开始您的参赛之旅
-                </p>
-                <ProjectSelector
-                  currentProject={currentProject}
-                  onSelectProject={handleProjectSelect}
-                />
+                <div className="space-y-3">
+                  <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+                    欢迎使用智能辅导平台
+                  </h2>
+                  <p className="text-muted-foreground text-lg leading-relaxed">
+                    AI智能分析 · 全程专业指导 · 助力一等奖
+                  </p>
+                </div>
+                <div className="pt-4">
+                  <ProjectSelector
+                    currentProject={currentProject}
+                    onSelectProject={handleProjectSelect}
+                  />
+                </div>
+                <div className="pt-6 grid grid-cols-3 gap-4 text-sm">
+                  <div className="p-3 rounded-xl bg-card border space-y-1">
+                    <div className="text-2xl">📋</div>
+                    <div className="font-semibold">智能评估</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-card border space-y-1">
+                    <div className="text-2xl">✨</div>
+                    <div className="font-semibold">AI生成</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-card border space-y-1">
+                    <div className="text-2xl">🎯</div>
+                    <div className="font-semibold">精准优化</div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -226,7 +258,7 @@ const Index = () => {
 
         {/* 右侧：交互区 */}
         {currentProject && (
-          <div className="w-96 border-l bg-card flex-shrink-0">
+          <div className="w-[28rem] border-l bg-gradient-to-b from-card to-muted/10 flex-shrink-0 shadow-lg">
             <InteractionPanel
               currentStage={currentStage}
               currentStep={currentStep}

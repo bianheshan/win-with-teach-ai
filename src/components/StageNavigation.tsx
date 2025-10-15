@@ -35,10 +35,19 @@ export function StageNavigation({ stages, currentStage, currentStep, onStepClick
 
   return (
     <ScrollArea className="h-full">
-      <div className="p-4 space-y-2">
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-primary mb-1">教学能力大赛</h2>
-          <p className="text-xs text-muted-foreground">智能辅导助手</p>
+      <div className="p-5 space-y-3">
+        <div className="mb-8 pb-4 border-b border-sidebar-border">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+              <span className="text-xl">🎯</span>
+            </div>
+            <div>
+              <h2 className="text-base font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+                教学能力大赛
+              </h2>
+              <p className="text-xs text-muted-foreground">智能辅导助手</p>
+            </div>
+          </div>
         </div>
 
         {stages.map((stage) => {
@@ -51,31 +60,44 @@ export function StageNavigation({ stages, currentStage, currentStep, onStepClick
               open={isOpen}
               onOpenChange={() => toggleStage(stage.id)}
               className={cn(
-                "rounded-lg border transition-all",
-                isCurrent ? "border-primary bg-primary/5" : "border-border bg-card"
+                "rounded-xl border-2 transition-all shadow-sm",
+                isCurrent 
+                  ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 shadow-md" 
+                  : "border-sidebar-border bg-card hover:border-primary/30 hover:shadow-md"
               )}
             >
               <CollapsibleTrigger className="w-full">
-                <div className="flex items-center gap-3 p-3 hover:bg-accent/50 rounded-lg transition-colors">
-                  <span className="text-2xl">{stage.icon}</span>
+                <div className="flex items-center gap-3 p-4 hover:bg-sidebar-accent/50 rounded-xl transition-smooth">
+                  <div className={cn(
+                    "w-10 h-10 rounded-lg flex items-center justify-center transition-smooth",
+                    isCurrent ? "bg-primary/20" : "bg-sidebar-accent"
+                  )}>
+                    <span className="text-2xl">{stage.icon}</span>
+                  </div>
                   <div className="flex-1 text-left">
                     <h3 className={cn(
-                      "font-semibold text-sm",
-                      isCurrent ? "text-primary" : "text-foreground"
+                      "font-bold text-sm",
+                      isCurrent ? "text-primary" : "text-sidebar-foreground"
                     )}>
                       {stage.title}
                     </h3>
                   </div>
                   {isOpen ? (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    <ChevronDown className={cn(
+                      "h-5 w-5 transition-smooth",
+                      isCurrent ? "text-primary" : "text-muted-foreground"
+                    )} />
                   ) : (
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    <ChevronRight className={cn(
+                      "h-5 w-5 transition-smooth",
+                      isCurrent ? "text-primary" : "text-muted-foreground"
+                    )} />
                   )}
                 </div>
               </CollapsibleTrigger>
 
               <CollapsibleContent>
-                <div className="px-3 pb-2 space-y-1">
+                <div className="px-3 pb-3 pt-2 space-y-1.5">
                   {stage.steps.map((step) => {
                     const isStepCurrent = currentStage === stage.id && currentStep === step.id;
 
@@ -84,16 +106,22 @@ export function StageNavigation({ stages, currentStage, currentStep, onStepClick
                         key={step.id}
                         onClick={() => onStepClick(stage.id, step.id)}
                         className={cn(
-                          "w-full flex items-center gap-2 p-2 rounded text-sm transition-colors text-left",
+                          "w-full flex items-center gap-3 p-3 rounded-lg text-sm transition-smooth text-left group",
                           isStepCurrent
-                            ? "bg-primary text-primary-foreground font-medium"
-                            : "hover:bg-accent text-muted-foreground hover:text-foreground"
+                            ? "bg-gradient-to-r from-primary to-primary-glow text-primary-foreground font-semibold shadow-md"
+                            : "hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-primary hover:shadow-sm"
                         )}
                       >
                         {step.completed ? (
-                          <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-success" />
+                          <CheckCircle2 className={cn(
+                            "h-5 w-5 flex-shrink-0",
+                            isStepCurrent ? "text-primary-foreground" : "text-success"
+                          )} />
                         ) : (
-                          <Circle className="h-4 w-4 flex-shrink-0" />
+                          <Circle className={cn(
+                            "h-5 w-5 flex-shrink-0 transition-smooth",
+                            isStepCurrent ? "text-primary-foreground" : "text-muted-foreground group-hover:text-primary"
+                          )} />
                         )}
                         <span className="flex-1">{step.title}</span>
                       </button>
